@@ -1,0 +1,31 @@
+version: '3.1'
+services:
+    nginx:
+        image: nginx:1.13.7
+        container_name: nginx
+        depends_on:
+            - flask
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+            - ./static-html:/home/nginx/static-html/
+            - ./exposed-filesystem:/home/nginx/exposed-filesystem/
+        networks:
+            - my-network
+        ports:
+            - 80:80
+            - 8000:8000
+            - 8080:8080
+        command: nginx
+
+    flask:
+        image: joshuaneely/flask-list-file-system
+        container_name: flask
+        volumes:
+            - ./exposed-filesystem:/home/flask/files/
+        networks:
+            my-network:
+                aliases:
+                    - flask-app
+
+networks:
+    my-network:
